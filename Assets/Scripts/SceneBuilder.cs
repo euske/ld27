@@ -3,42 +3,25 @@ using System.Collections;
 
 public class SceneBuilder : MonoBehaviour {
 
-    public Transform BlockPrefab;
+    public Transform floorPrefab;
     public float range = 3.0f;
-    public float interval = 0.1f;
-
-    private float t0 = 0f;
-
-    // Use this for initialization
-    void Start () {
-        t0 = Time.time;
-    }
+    public int numFloors = 10;
     
-    // Update is called once per frame
-    void Update () {
-        float t = Time.time;
-        if (t0 + interval <= t) {
-            t0 = t;
-            createBlock();
+    void Start () {
+        for (int i = 0; i < numFloors; i++) {
+            createFloor();
         }
     }
     
-    private void createBlock()
-    {
-        Instantiate(BlockPrefab, randpos(), randrot());
+    void Update () {
     }
-
-    private Vector3 randpos()
+    
+    private void createFloor()
     {
-        return new Vector3(Random.Range(-range, +range),
-                           Random.Range(-range, +range),                           
-                           +20);
-    }
-
-    private Quaternion randrot()
-    {
-        return Quaternion.Euler(Random.Range(0f, 360f),
-                                Random.Range(0f, 360f),
-                                Random.Range(0f, 360f));
+        Vector3 scale = floorPrefab.transform.localScale;
+        Vector3 pos = new Vector3(Random.Range(-range, +range) * scale.x,
+                                  Random.Range(-range, +range) * scale.y,
+                                  Random.Range(-range, +range) * scale.z);
+        Instantiate(floorPrefab, pos, transform.rotation);
     }
 }
