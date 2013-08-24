@@ -3,7 +3,7 @@ using System.Collections;
 
 public class MouseLookY : MonoBehaviour {
 
-    public float sensitivity = 10f;
+    public float sensitivity = 5f;
     public float minimum = -60f;
     public float maximum = 60f;
 

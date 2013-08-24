@@ -4,11 +4,13 @@
 TagManager:
   tags:
   - floor
-  - block
-  - powerup
-  - missile
-  - box
+  - player
   - food
+  - block
+  - enemy
+  - powerup_extra_jump
+  - powerup_gun
+  - powerup_transparency
   - 
   Builtin Layer 0: Default
   Builtin Layer 1: TransparentFX

@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 public class SceneBuilder : MonoBehaviour {
 
-    public Transform blockPrefab;
-    public Transform foodPrefab;
-    public Transform powerupPrefab;
+    public Transform[] blockPrefabs;
+    public Transform[] foodPrefabs;
+    public Transform[] powerupPrefabs;
 
     public float range = 5.0f;
     public float floorspeed = -20.0f;
@@ -22,22 +22,27 @@ public class SceneBuilder : MonoBehaviour {
         objects = new List<Transform>();
     }
 
+    private Transform pickOne(Transform[] prefabs)
+    {
+        return prefabs[Random.Range(0, prefabs.Length)];
+    }
+
     private Transform makeBlock()
     {
         Vector3 pos = new Vector3(Random.Range(-range, +range), 0, +floorlimit);
-        return (Instantiate(blockPrefab, pos, transform.rotation) as Transform);
+        return (Instantiate(pickOne(blockPrefabs), pos, transform.rotation) as Transform);
     }
     
     private Transform makeFood()
     {
         Vector3 pos = new Vector3(Random.Range(-range, +range), 0, +floorlimit);
-        return (Instantiate(foodPrefab, pos, transform.rotation) as Transform);
+        return (Instantiate(pickOne(foodPrefabs), pos, transform.rotation) as Transform);
     }
     
     private Transform makePowerup()
     {
         Vector3 pos = new Vector3(Random.Range(-range, +range), 0, +floorlimit);
-        return (Instantiate(powerupPrefab, pos, transform.rotation) as Transform);
+        return (Instantiate(pickOne(powerupPrefabs), pos, transform.rotation) as Transform);
     }
     
     void Update () {

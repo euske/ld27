@@ -11,14 +11,21 @@ public class PlayerMove : MonoBehaviour
     public AudioClip landsound;
     public AudioClip eatsound;
     public AudioClip hitsound;
+    public AudioClip powerupsound;
+    public AudioClip ticksound;
 
     private bool landed;
     private int health;
+    private int powerup;
+    private int powerup_type;
+    private float t0;
 
     void Start()
     {
+        t0 = Time.time;
         landed = false;
         health = maxhealth;
+        GameManager.Instance.SendMessage("SetHealth", health);
     }
 
     void Update()
@@ -30,6 +37,16 @@ public class PlayerMove : MonoBehaviour
         if (landed && Input.GetButtonDown("Jump")) {
             Jump();
         }
+        if (0 < powerup) {
+            float t = Time.time;
+            if (t0+1.0f < t) {
+                t0 = t;
+                powerup--;
+                audio.PlayOneShot(ticksound);
+            }
+        }
+        float gravity = (0 < powerup && powerup_type == 0)? 0.0f : 10.0f;
+        rigidbody.AddForce(Vector3.down * gravity);
     }
 
     void OnCollisionEnter(Collision col)
@@ -52,6 +69,27 @@ public class PlayerMove : MonoBehaviour
                 audio.PlayOneShot(hitsound);
             }
             health--;
+            GameManager.Instance.SendMessage("SetHealth", health);
+            
+        } else if (col.gameObject.tag == "powerup_extra_jump") {
+            if (powerupsound) {
+                audio.PlayOneShot(powerupsound);
+            }
+            powerup = 10;
+            powerup_type = 0;
+            Destroy(col.gameObject);
+            
+        } else if (col.gameObject.tag == "powerup_gun") {
+            if (powerupsound) {
+                audio.PlayOneShot(powerupsound);
+            }
+            Destroy(col.gameObject);
+            
+        } else if (col.gameObject.tag == "powerup_transparency") {
+            if (powerupsound) {
+                audio.PlayOneShot(powerupsound);
+            }
+            Destroy(col.gameObject);
             
         }
     }
