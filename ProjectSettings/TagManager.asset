@@ -4,9 +4,11 @@
 TagManager:
   tags:
   - floor
-  - train
-  - light
+  - block
+  - powerup
   - missile
+  - box
+  - food
   - 
   Builtin Layer 0: Default
   Builtin Layer 1: TransparentFX

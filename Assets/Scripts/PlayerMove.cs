@@ -5,11 +5,21 @@ public class PlayerMove : MonoBehaviour
 {
     public float speed = 10.0f;
     public float jumpacc = 10.0f;
+    public int maxhealth = 5;
 
     public AudioClip jumpsound;
     public AudioClip landsound;
+    public AudioClip eatsound;
+    public AudioClip hitsound;
 
-    private bool landed = false;
+    private bool landed;
+    private int health;
+
+    void Start()
+    {
+        landed = false;
+        health = maxhealth;
+    }
 
     void Update()
     {
@@ -29,7 +39,21 @@ public class PlayerMove : MonoBehaviour
                 audio.PlayOneShot(landsound);
             }
 	    landed = true;
-	}
+
+	} else if (col.gameObject.tag == "food") {
+            if (eatsound) {
+                audio.PlayOneShot(eatsound);
+            }
+            GameManager.Instance.SendMessage("ScoreIt");
+            Destroy(col.gameObject);
+
+        } else if (col.gameObject.tag == "block") {
+            if (hitsound) {
+                audio.PlayOneShot(hitsound);
+            }
+            health--;
+            
+        }
     }
 
     void OnCollisionExit(Collision col)
