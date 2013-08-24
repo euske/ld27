@@ -28,9 +28,14 @@ public class GameManager : MonoBehaviour {
         
     }
 
-    void ScoreIt() 
+    void GameOver()
     {
-        score++;
+        Application.LoadLevel("scene1");
+    }
+
+    void UpdateScore(FoodType food)
+    {
+        score += (food == FoodType.Golden)? 3 : 1;
     }
 
     void SetHealth(int v)

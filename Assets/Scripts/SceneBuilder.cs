@@ -2,16 +2,16 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class SceneBuilder : MonoBehaviour {
+public class SceneBuilder : MonoBehaviour
+{
+    public const float range = 5.0f;
+    public const float floorspeed = -30.0f;
+    public const float floorlimit = 50.0f;
+    public const float interval = 2.0f;
 
     public Transform[] blockPrefabs;
     public Transform[] foodPrefabs;
     public Transform[] powerupPrefabs;
-
-    public float range = 5.0f;
-    public float floorspeed = -30.0f;
-    public float floorlimit = 50.0f;
-    public float interval = 2.0f;
 
     public int[][] distribution = {
         // mode 0
@@ -79,7 +79,9 @@ public class SceneBuilder : MonoBehaviour {
             Transform prefab = getPrefab(objtype);
             if (prefab != null) {
                 Vector3 pos = new Vector3(Random.Range(-range, +range), 0, +floorlimit);
-                objects.Add(Instantiate(prefab, pos, transform.rotation) as Transform);
+                Transform obj = Instantiate(prefab, pos, transform.rotation) as Transform;
+                obj.parent = transform;
+                objects.Add(obj);
             }
         }
 

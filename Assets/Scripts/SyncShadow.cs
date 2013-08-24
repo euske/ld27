@@ -1,16 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class SyncShadow : MonoBehaviour {
-
+public class SyncShadow : MonoBehaviour 
+{
+    public Transform light;
     public Transform target;
 
     void Awake()
     {
-        GameObject light = GameObject.FindWithTag("light");
-        if (light) {
-            transform.rotation = light.GetComponent<Transform>().rotation;
-        }
+        transform.rotation = light.rotation;
     }
 	
     void Update()
