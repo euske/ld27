@@ -9,17 +9,42 @@ public class SceneBuilder : MonoBehaviour {
     public Transform[] powerupPrefabs;
 
     public float range = 5.0f;
-    public float floorspeed = -20.0f;
+    public float floorspeed = -30.0f;
     public float floorlimit = 50.0f;
+    public float interval = 2.0f;
 
-    public float interval = 0.2f;
+    public int[][] distribution = {
+        // mode 0
+        new int[] { -1, },
 
+        // mode 1
+        new int[] { -1, -1, -1, -1,
+                    0, 1, 2, 3, 4, 
+                    10,    
+                    20, 21, 22 },
+        // mode 2
+        new int[] { -1, -1, -1, -1, -1, -1,
+                    1, 2, 4,       
+                    10, 10, 11, 
+                    20, 21, 22, },
+    };
+    
+    private int mode;
+    private float mode_end;
     private float t0;
     private List<Transform> objects;
     
     void Start () {
         t0 = Time.time;
         objects = new List<Transform>();
+        changeMode();
+    }
+
+    private void changeMode()
+    {
+        mode = Random.Range(0, distribution.Length);
+        mode_end = Time.time + Random.Range(1f, 3f);
+        print("mode="+mode);
     }
 
     private Transform pickOne(Transform[] prefabs)
@@ -27,36 +52,34 @@ public class SceneBuilder : MonoBehaviour {
         return prefabs[Random.Range(0, prefabs.Length)];
     }
 
-    private Transform makeBlock()
+    private Transform getPrefab(int objtype)
     {
-        Vector3 pos = new Vector3(Random.Range(-range, +range), 0, +floorlimit);
-        return (Instantiate(pickOne(blockPrefabs), pos, transform.rotation) as Transform);
+        if (objtype < 0) {
+            return null;
+        } else if (objtype < 10) {
+            return blockPrefabs[objtype];
+        } else if (objtype < 20) {
+            return foodPrefabs[objtype-10];
+        } else if (objtype < 30) {
+            return powerupPrefabs[objtype-20];
+        }
+        return null;
     }
-    
-    private Transform makeFood()
-    {
-        Vector3 pos = new Vector3(Random.Range(-range, +range), 0, +floorlimit);
-        return (Instantiate(pickOne(foodPrefabs), pos, transform.rotation) as Transform);
-    }
-    
-    private Transform makePowerup()
-    {
-        Vector3 pos = new Vector3(Random.Range(-range, +range), 0, +floorlimit);
-        return (Instantiate(pickOne(powerupPrefabs), pos, transform.rotation) as Transform);
-    }
-    
+
     void Update () {
         float t = Time.time;
-        if (t0 + interval <= t) {
+        if (mode_end < t) {
+            changeMode();
+        }
+
+        if (t0 + interval/floorspeed <= t) {
             t0 = t;
-            if (Random.Range(0, 2) == 0) {
-                objects.Add(makeBlock());
-            }
-            if (Random.Range(0, 4) == 0) {
-                objects.Add(makeFood());
-            }
-            if (Random.Range(0, 4) == 0) {
-                objects.Add(makePowerup());
+            int[] dist1 = distribution[mode];
+            int objtype = dist1[Random.Range(0, dist1.Length)];
+            Transform prefab = getPrefab(objtype);
+            if (prefab != null) {
+                Vector3 pos = new Vector3(Random.Range(-range, +range), 0, +floorlimit);
+                objects.Add(Instantiate(prefab, pos, transform.rotation) as Transform);
             }
         }
 
