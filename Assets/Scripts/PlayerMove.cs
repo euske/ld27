@@ -32,6 +32,13 @@ public class PlayerMove : MonoBehaviour
 	}
     }
 
+    void OnCollisionExit(Collision col)
+    {
+	if (landed && col.gameObject.tag == "floor") {
+            landed = false;
+        }
+    }
+
     private void Move(float vx, float vz)
     {
 	Vector3 v = (Vector3.right * vx + Vector3.forward * vz);
@@ -44,7 +51,6 @@ public class PlayerMove : MonoBehaviour
         if (jumpsound) {
             audio.PlayOneShot(jumpsound);
         }
-        landed = false;
     }
 
 }

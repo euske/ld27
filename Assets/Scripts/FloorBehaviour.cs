@@ -5,7 +5,9 @@ public class FloorBehaviour : MonoBehaviour {
 
     public float speed = 1.0f;
     public float rotspeed = 10.0f;
-    public float scalespeed = 0.001f;
+    public float scalespeed = 0.01f;
+    public Transform missilePrefab;
+    public AudioClip missileSound;
 
     private Vector3 direction;
     private Vector3 rotation;
@@ -38,10 +40,8 @@ public class FloorBehaviour : MonoBehaviour {
         }
     }
 
-    void ChangeBehaviour()
+    void ChangeBehaviour(int action)
     {
-        int action = Random.Range(0, 6);
-
         switch (action) {
         case 0:
             direction = randvec();
@@ -61,6 +61,38 @@ public class FloorBehaviour : MonoBehaviour {
         case 5:
             scaling = 0;
             break;
+        case 6:
+            if (missilePrefab) {
+                Vector3 s = transform.localScale;
+                Vector3 d = randdir();
+                Vector3 pos = (transform.right * d.x*s.x +
+                               transform.up * d.y*s.y +
+                               transform.forward * d.z*s.z);
+                Quaternion rot = Quaternion.LookRotation(d);
+                Instantiate(missilePrefab, transform.position+pos, rot);
+                if (missileSound) {
+                    audio.PlayOneShot(missileSound);
+                }
+            }
+            break;
+        }
+    }
+
+    private Vector3 randdir()
+    {
+        switch (Random.Range(0, 6)) {
+        case 0:
+            return Vector3.up;
+        case 1:
+            return Vector3.down;
+        case 2:
+            return Vector3.left;
+        case 3:
+            return Vector3.right;
+        case 4:
+            return Vector3.forward;
+        default:
+            return Vector3.back;
         }
     }
 

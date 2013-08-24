@@ -21,6 +21,7 @@ public class SceneManager : MonoBehaviour {
     void Start () {
         t0 = Time.time;
         count = interval;
+        guiText.text = count.ToString();
     }
     
     void Update () {
@@ -41,15 +42,31 @@ public class SceneManager : MonoBehaviour {
         } else {
             audio.PlayOneShot(tickSound);
         }
+        guiText.text = count.ToString();
     }
 
     private void somethingHappens()
     {
-        foreach (GameObject obj in GameObject.FindGameObjectsWithTag("floor")) {
-            FloorBehaviour floor = obj.GetComponent<FloorBehaviour>();
-            if (floor) {
-                floor.SendMessage("ChangeBehaviour");
+        //int action = 6;
+        int action = Random.Range(0, 7);
+
+        switch (action) {
+        case 0:
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+            foreach (GameObject obj in GameObject.FindGameObjectsWithTag("floor")) {
+                FloorBehaviour floor = obj.GetComponent<FloorBehaviour>();
+                if (floor) {
+                    floor.SendMessage("ChangeBehaviour", action);
+                }
             }
+            break;
+        case 7:
+            break;
         }
     }
 }

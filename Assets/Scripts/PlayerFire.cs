@@ -11,7 +11,9 @@ public class PlayerFire : MonoBehaviour
 	if (Input.GetButtonDown("Fire1")) {
 	    Vector3 pos = transform.position + transform.forward;
 	    Instantiate(bulletPrefab, pos, transform.rotation);
-	    audio.PlayOneShot(firesound);
+            if (firesound) {
+                audio.PlayOneShot(firesound);
+            }
 	}
     }
 }
