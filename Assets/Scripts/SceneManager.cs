@@ -48,7 +48,7 @@ public class SceneManager : MonoBehaviour {
         foreach (GameObject obj in GameObject.FindGameObjectsWithTag("floor")) {
             FloorBehaviour floor = obj.GetComponent<FloorBehaviour>();
             if (floor) {
-                floor.SendMessage("StartPancake");
+                floor.SendMessage("ChangeBehaviour");
             }
         }
     }

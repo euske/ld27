@@ -7,6 +7,7 @@ public class PlayerMove : MonoBehaviour
     public float jumpacc = 10.0f;
 
     public AudioClip jumpsound;
+    public AudioClip landsound;
 
     private bool landed = false;
 
@@ -23,7 +24,10 @@ public class PlayerMove : MonoBehaviour
 
     void OnCollisionEnter(Collision col)
     {
-	if (col.gameObject.tag == "floor") {
+	if (!landed && col.gameObject.tag == "floor") {
+            if (landsound) {
+                audio.PlayOneShot(landsound);
+            }
 	    landed = true;
 	}
     }
