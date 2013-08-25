@@ -5,6 +5,7 @@ public class PlayerBehaviour : MonoBehaviour
 {
     public const int TEN_SECONDS = 10;
 
+    public const float range = 5.0f;
     public const float hspeed = 10.0f;
     public const float vspeed = 2.0f;
     public const float hlimit = 4.5f;
@@ -134,9 +135,10 @@ public class PlayerBehaviour : MonoBehaviour
             }
         }
 
-        if (hlimit < transform.position.y) {
-            transform.Translate(Vector3.up * (hlimit-transform.position.y));
-        }
+        transform.position = new Vector3(
+            Mathf.Clamp(transform.position.x, -range, +range),
+            Mathf.Clamp(transform.position.y, -100f, hlimit),
+            Mathf.Clamp(transform.position.z, -100f, +100f));
 
         SceneBuilder.Instance.SendMessage("SetPlayerPos", transform.position);
     }

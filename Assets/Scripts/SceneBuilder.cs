@@ -16,8 +16,8 @@ public class SceneBuilder : MonoBehaviour
     public const float range = 5.0f;
     public const float floorspeed = 30.0f;
     public const float floorlimit = 50.0f;
-    public const float goalpos = -30.0f; // testing
-    //public const float goalpos = +45.0f;
+    //public const float goalpos = -30.0f; // testing
+    public const float goalpos = +45.0f;
     public const float objinterval = 1.0f;
     public const float floortexratio = floorspeed/floorlimit*0.5f;
     public const float bottomy = -20.0f;
@@ -28,8 +28,8 @@ public class SceneBuilder : MonoBehaviour
     public Material floorMaterial;
     public AudioClip destroysound;
     public AudioClip pancakesound;
-    private GUIStyle style_big;
-    private GUIStyle style_normal;
+    private GUIStyle2 style_big;
+    private GUIStyle2 style_normal;
     private PlayerStatus status = PlayerStatus.None;
 
     public int[][] distribution = {
@@ -76,18 +76,12 @@ public class SceneBuilder : MonoBehaviour
     private float t0;
     private List<Transform> objects;
     private bool visible;
-    
+
     void Awake()
     {
         Instance = this;
-        style_big = new GUIStyle();
-        style_big.fontSize = 360;
-        style_big.alignment = TextAnchor.MiddleCenter;
-        style_big.normal.textColor = Color.white;
-        style_normal = new GUIStyle();
-        style_normal.fontSize = 48;
-        style_normal.alignment = TextAnchor.MiddleCenter;
-        style_normal.normal.textColor = Color.white;
+        style_big = new GUIStyle2(360, Color.white);
+        style_normal = new GUIStyle2(49, Color.white);
     }
 
     void Start () 
@@ -137,10 +131,10 @@ public class SceneBuilder : MonoBehaviour
     {
         switch (status) {
         case PlayerStatus.Died:
-            GUI.Label(new Rect(32, 0, 200, 100), "You Failed!", style_normal);
+            style_normal.Render(new Rect(32, 0, 200, 100), "You Failed!");
             break;
         default:
-            GUI.Label(new Rect(32, 0, 200, 100), ("Score: "+score), style_normal);
+            style_normal.Render(new Rect(32, 0, 200, 100), ("Score: "+score));
             break;
         }
 
@@ -148,10 +142,10 @@ public class SceneBuilder : MonoBehaviour
             Rect r = new Rect(Screen.width/2-100, Screen.height/2-100, 200, 200);
             switch (status) {
             case PlayerStatus.Goaled:
-                GUI.Label(r, ":)", style_big);
+                style_big.Render(r, ":)");
                 break;
             case PlayerStatus.Died:
-                GUI.Label(r, ":(", style_big);
+                style_big.Render(r, ":(");
                 break;
             }
         }

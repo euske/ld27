@@ -3,14 +3,11 @@ using System.Collections;
 
 public class EndingScript : MonoBehaviour {
     
-    private GUIStyle style;
+    private GUIStyle2 style;
 
     void Awake()
     {
-        style = new GUIStyle();
-        style.fontSize = 120;
-        style.alignment = TextAnchor.MiddleCenter;
-        style.normal.textColor = Color.white;
+        style = new GUIStyle2(120, Color.white);
     }
 
     void Update () 
@@ -25,8 +22,8 @@ public class EndingScript : MonoBehaviour {
 
     void OnGUI()
     {
-        Rect r = new Rect(Screen.width/2-100, Screen.height/2-100, 200, 200);
+        Rect r = new Rect(Screen.width/2-100, Screen.height/2, 200, 200);
         int score = GameManager.Instance.score;
-        GUI.Label(r, "Score: "+score, style);
+        style.Render(r, "Score: "+score);
     }
 }
