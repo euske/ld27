@@ -22,6 +22,7 @@ public class PlayerBehaviour : MonoBehaviour
     public Transform bulletPrefab;
     public AudioClip walksound;
     public AudioClip jumpsound;
+    public AudioClip extrajumpsound;
     public AudioClip landsound;
     public AudioClip eatsound;
     public AudioClip hitsound;
@@ -75,11 +76,15 @@ public class PlayerBehaviour : MonoBehaviour
 	transform.Translate(Vector3.right * vx + 
                             Vector3.forward * vz);
 
-//        if (landed && 
-//            powerup_active != PowerupType.ExtraJump &&
-//            Input.GetButtonDown("Jump")) {
-//            rigidbody.AddForce(Vector3.up * jumpacc, ForceMode.Impulse);
-//        }
+        if (landed && 
+            powerup_active != PowerupType.ExtraJump &&
+            Input.GetButtonDown("Jump")) {
+            if (jumpsound) {
+                audio.PlayOneShot(jumpsound);
+            }
+            rigidbody.AddForce(Vector3.up * jumpacc, ForceMode.Impulse);
+        }
+        
         if (landed && vx != 0) {
             if (walk_tick+walk_interval < t) {
                 walk_tick = t;
@@ -92,7 +97,7 @@ public class PlayerBehaviour : MonoBehaviour
         }
 
 	if (powerup_owned != PowerupType.None &&
-            Input.GetButtonDown("Jump")) {
+            Input.GetButtonDown("Fire1")) {
             powerup_timer = TEN_SECONDS;
             powerup_tick = t;
             powerup_active = powerup_owned;
@@ -100,8 +105,8 @@ public class PlayerBehaviour : MonoBehaviour
             PowerupDisplay.Instance.SendMessage("UpdateTimer", powerup_timer);
             switch (powerup_active) {
             case PowerupType.ExtraJump:
-                if (jumpsound) {
-                    audio.PlayOneShot(jumpsound);
+                if (extrajumpsound) {
+                    audio.PlayOneShot(extrajumpsound);
                 }
                 break;
             case PowerupType.Gun:

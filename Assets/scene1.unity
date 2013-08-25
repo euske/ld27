@@ -696,7 +696,8 @@ MonoBehaviour:
   bulletPrefab: {fileID: 400000, guid: 168446d90bae33c4880fac84f2a6ffac, type: 2}
   walksound: {fileID: 8300000, guid: a4ac56e3a8e8c7e4cb85b60c610b3a05, type: 3}
   jumpsound: {fileID: 8300000, guid: bcf3c4297b353924987f76782f9784f0, type: 3}
-  landsound: {fileID: 0}
+  extrajumpsound: {fileID: 8300000, guid: 863aa9c8edd43be40982f6e3cf4c7187, type: 3}
+  landsound: {fileID: 8300000, guid: 0df90dccd6c00b74eb5f965d137b254a, type: 3}
   eatsound: {fileID: 8300000, guid: 7f5f586cbbc59ac48a15f73ae4105e51, type: 3}
   hitsound: {fileID: 8300000, guid: c771272ac217fbd488b657b0f3661721, type: 3}
   powerupsound: {fileID: 8300000, guid: c8e96f5212f56434aa584689aef65b00, type: 3}

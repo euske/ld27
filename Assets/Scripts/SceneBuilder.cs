@@ -19,9 +19,10 @@ public class SceneBuilder : MonoBehaviour
     public const int tiling = 100;
     public const float timeout = 2f;
     public const float goalpos = +50.0f;
-    public const float objinterval = 1.0f;
+    public const float objinterval = 1.5f;
     public const float floortexratio = floorspeed/floorlimit*tiling*0.5f;
-    public const float bottomy = -20.0f;
+    public const float mode_min = 0.5f;
+    public const float mode_max = 4.0f;
 
     public Transform[] blockPrefabs;
     public Transform[] foodPrefabs;
@@ -41,22 +42,22 @@ public class SceneBuilder : MonoBehaviour
         // 20, 21, 22: powerup: extra jump, gun, transparency
 
         // mode 0: normal
-        new int[] { -1, -1, -1, -1, -1, -1, -1,
-                    0, 1, 2, 2, 3, 4,
-                    10, 10,
+        new int[] { -1, -1, -1, -1, -1, -1, -1, -1, -1,
+                    0, 1, 1, 1, 2, 2, 3, 4, 
+                    10, 10, 10, 10,
                     20, 21, 22, },
 
         // mode 1: upper block
-        new int[] { -1, -1, -1,
-                    0, 2, 4, 4, 4, 
-                    10, 
-                    20, 21, },
+        new int[] { -1, -1, -1, -1, -1, 
+                    0, 2, 2, 4, 4, 4, 
+                    10, 10, 
+                    20, 22, },
 
         // mode 2: food!
         new int[] { -1, -1, -1, 
                     0, 2, 
                     10, 10, 10, 10, 10, 11, 
-                    20, 21, },
+                    20, 21, 22, },
 
         // mode 3: food and upper block
         new int[] { -1, -1, -1, 
@@ -72,7 +73,8 @@ public class SceneBuilder : MonoBehaviour
 
         // mode 5: no food
         new int[] { -1, -1, -1, -1, -1, -1,
-                    0, 2, 3, 4, },
+                    0, 2, 3, 4, 
+                    22, },
 
     };
     
@@ -156,7 +158,7 @@ public class SceneBuilder : MonoBehaviour
     private void changeMode()
     {
         mode = Random.Range(0, distribution.Length);
-        mode_end = Time.time + Random.Range(1f, 3f);
+        mode_end = Time.time + Random.Range(mode_min, mode_max);
     }
 
     private Transform getPrefab(int objtype)
