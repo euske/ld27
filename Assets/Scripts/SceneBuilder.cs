@@ -2,6 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 
+public enum PlayerStatus
+{
+    None = 0,
+    Died,
+    Goaled,
+}
+
 public class SceneBuilder : MonoBehaviour
 {
     public static SceneBuilder Instance;
@@ -9,6 +16,8 @@ public class SceneBuilder : MonoBehaviour
     public const float range = 5.0f;
     public const float floorspeed = 30.0f;
     public const float floorlimit = 50.0f;
+    //public const float goalpos = -30.0f; // testing
+    public const float goalpos = +45.0f;
     public const float objinterval = 1.0f;
     public const float floortexratio = floorspeed/floorlimit*0.5f;
     public const float bottomy = -20.0f;
@@ -18,8 +27,10 @@ public class SceneBuilder : MonoBehaviour
     public Transform[] powerupPrefabs;
     public Material floorMaterial;
     public AudioClip destroysound;
+    public AudioClip pancakesound;
     private GUIStyle style_big;
     private GUIStyle style_normal;
+    private PlayerStatus status = PlayerStatus.None;
 
     public int[][] distribution = {
         // -1: no object
@@ -31,25 +42,31 @@ public class SceneBuilder : MonoBehaviour
         new int[] { -1, -1, -1, -1, -1, -1, -1,
                     0, 1, 2, 2, 3, 4,
                     10, 10,
-                    20, },
+                    20, 21, 22, },
 
         // mode 1: upper block
         new int[] { -1, -1, -1,
                     0, 2, 4, 4, 4, 
                     10, 
-                    20, },
+                    20, 21, },
 
         // mode 2: food!
-        new int[] { -1, -1, -1, -1, 
-                    0, 1, 2, 
+        new int[] { -1, -1, -1, 
+                    0, 2, 
                     10, 10, 10, 10, 10, 11, 
+                    20, 21, },
+
+        // mode 3: food and upper block
+        new int[] { -1, -1, -1, 
+                    2, 3, 4, 4,
+                    10, 10, 10, 10, 11,
                     20, },
 
-        // mode 3: too much enemies
+        // mode 4: too much enemies
         new int[] { -1, -1, 
                     0, 1, 2, 3, 3, 3, 4, 4,
                     10, 
-                    20, },
+                    20, 21, },
 
     };
     
@@ -59,7 +76,6 @@ public class SceneBuilder : MonoBehaviour
     private float t0;
     private List<Transform> objects;
     private bool visible;
-    private float playery;
     
     void Awake()
     {
@@ -82,11 +98,26 @@ public class SceneBuilder : MonoBehaviour
         changeMode();
     }
 
-    void SetPlayerY(float y)
+    void SetPlayerPos(Vector3 pos)
     {
-        playery = y;
-        if (playery < bottomy) {
-            Application.LoadLevel("scene0");
+        if (status == PlayerStatus.None) {
+            if (goalpos < pos.z) {
+                status = PlayerStatus.Goaled;
+            } else if (pos.y < -1f) {
+                status = PlayerStatus.Died;
+                audio.PlayOneShot(pancakesound);
+            }
+        } 
+
+        if (pos.y < bottomy) {
+            switch (status) {
+            case PlayerStatus.Goaled:
+                Application.LoadLevel("scene2");
+                break;
+            case PlayerStatus.Died:
+                Application.LoadLevel("scene0");
+                break;
+            }
         }
     }
 
@@ -102,11 +133,24 @@ public class SceneBuilder : MonoBehaviour
 
     void OnGUI()
     {
-        GUI.Label(new Rect(32, 0, 200, 100), ("Score: "+score), style_normal);
+        switch (status) {
+        case PlayerStatus.Died:
+            GUI.Label(new Rect(32, 0, 200, 100), "You Failed!", style_normal);
+            break;
+        default:
+            GUI.Label(new Rect(32, 0, 200, 100), ("Score: "+score), style_normal);
+            break;
+        }
+
         if (visible) {
-            if (playery < -1f) {
-                Rect r = new Rect(Screen.width/2-100, Screen.height/2-100, 200, 200);
+            Rect r = new Rect(Screen.width/2-100, Screen.height/2-100, 200, 200);
+            switch (status) {
+            case PlayerStatus.Goaled:
+                GUI.Label(r, ":)", style_big);
+                break;
+            case PlayerStatus.Died:
                 GUI.Label(r, ":(", style_big);
+                break;
             }
         }
     }
@@ -115,7 +159,6 @@ public class SceneBuilder : MonoBehaviour
     {
         mode = Random.Range(0, distribution.Length);
         mode_end = Time.time + Random.Range(1f, 3f);
-        //print("mode="+mode);
     }
 
     private Transform getPrefab(int objtype)

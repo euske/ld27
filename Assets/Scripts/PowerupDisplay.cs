@@ -10,6 +10,7 @@ public class PowerupDisplay : MonoBehaviour {
     public Transform powerupTransparencyPrefab;
 
     private GUIStyle style_big;
+    private GUIStyle style_big2;
     private GUIStyle style_normal;
     private Transform current;
     private int left;
@@ -21,7 +22,11 @@ public class PowerupDisplay : MonoBehaviour {
         style_big = new GUIStyle();
         style_big.fontSize = 720;
         style_big.alignment = TextAnchor.MiddleCenter;
-        style_big.normal.textColor = Color.white;
+        style_big.normal.textColor = Color.yellow;
+        style_big2 = new GUIStyle();
+        style_big2.fontSize = 720;
+        style_big2.alignment = TextAnchor.MiddleCenter;
+        style_big2.normal.textColor = Color.black;
         style_normal = new GUIStyle();
         style_normal.fontSize = 72;
         style_normal.alignment = TextAnchor.MiddleCenter;
@@ -33,6 +38,9 @@ public class PowerupDisplay : MonoBehaviour {
         if (visible) {
             if (0 < left) {
                 Rect r = new Rect(Screen.width/2-100, Screen.height/2-100, 200, 200);
+                GUI.Label(r, left.ToString(), style_big2);
+                r.x -= 10;
+                r.y -= 10;
                 GUI.Label(r, left.ToString(), style_big);
             } else if (current != null) {
                 Rect r = new Rect(Screen.width/2+100, 0, 200, 72);

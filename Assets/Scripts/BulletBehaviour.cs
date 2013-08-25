@@ -3,11 +3,13 @@ using System.Collections;
 
 public class BulletBehaviour : MonoBehaviour {
 
-    public float duration = 3.0f;
-    public float speed = 10.0f;
+    public const float duration = 3.0f;
+    public const float speed = 10.0f;
+    public const float rot = 10.0f;
 
     void Start () {
         rigidbody.AddForce(Vector3.forward * speed, ForceMode.Impulse);
+        rigidbody.AddTorque(randvec(rot), ForceMode.Impulse);
 	Destroy(gameObject, duration);
     }
 
@@ -21,5 +23,12 @@ public class BulletBehaviour : MonoBehaviour {
             Destroy(col.gameObject);
         }
         Destroy(gameObject);
+    }
+
+    private Vector3 randvec(float v)
+    {
+        return new Vector3(Random.Range(-v, +v),
+                           Random.Range(-v, +v),                           
+                           Random.Range(-v, +v));
     }
 }

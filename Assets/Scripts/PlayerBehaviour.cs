@@ -7,6 +7,7 @@ public class PlayerBehaviour : MonoBehaviour
 
     public const float hspeed = 10.0f;
     public const float vspeed = 2.0f;
+    public const float hlimit = 4.5f;
     public const float jumpacc = 10.0f;
     public const float extrajumpheight = 4.0f;
     public const float extrajumpspeed = 10.0f;
@@ -29,7 +30,7 @@ public class PlayerBehaviour : MonoBehaviour
     private int powerup_timer;
     private float powerup_tick;
     private PowerupType powerup_active;
-    private PowerupType powerup_owned = PowerupType.Transparency;
+    private PowerupType powerup_owned = PowerupType.None;
     private float gun_tick;
 
     void Start()
@@ -68,20 +69,14 @@ public class PlayerBehaviour : MonoBehaviour
 	transform.Translate(Vector3.right * vx + 
                             Vector3.forward * vz);
 
-        if (landed && 
-            powerup_active != PowerupType.ExtraJump &&
-            Input.GetButtonDown("Jump")) {
-            if (jumpsound) {
-                audio.PlayOneShot(jumpsound);
-            }
-            rigidbody.AddForce(Vector3.up * jumpacc, ForceMode.Impulse);
-        }
+//        if (landed && 
+//            powerup_active != PowerupType.ExtraJump &&
+//            Input.GetButtonDown("Jump")) {
+//            rigidbody.AddForce(Vector3.up * jumpacc, ForceMode.Impulse);
+//        }
 
 	if (powerup_owned != PowerupType.None &&
-            Input.GetButtonDown("Fire1")) {
-            if (powerupsound) {
-                audio.PlayOneShot(powerupsound);
-            }
+            Input.GetButtonDown("Jump")) {
             powerup_timer = TEN_SECONDS;
             powerup_tick = Time.time;
             powerup_active = powerup_owned;
@@ -89,11 +84,17 @@ public class PlayerBehaviour : MonoBehaviour
             PowerupDisplay.Instance.SendMessage("UpdateTimer", powerup_timer);
             switch (powerup_active) {
             case PowerupType.ExtraJump:
+                if (jumpsound) {
+                    audio.PlayOneShot(jumpsound);
+                }
                 break;
             case PowerupType.Gun:
                 gun_tick = Time.time;
                 break;
             case PowerupType.Transparency:
+                if (powerupsound) {
+                    audio.PlayOneShot(powerupsound);
+                }
                 setTransparency(true);
                 break;
             }
@@ -104,7 +105,7 @@ public class PlayerBehaviour : MonoBehaviour
             if (gun_tick+gun_interval < t) {
                 gun_tick = t;
                 if (firesound) {
-                    audio.PlayOneShot(firesound);
+                    audio.PlayOneShot(firesound, 0.5f);
                 }
                 Vector3 pos = (transform.up * transform.localScale.y * -0.5f +
                                transform.forward * transform.localScale.z);
@@ -133,9 +134,11 @@ public class PlayerBehaviour : MonoBehaviour
             }
         }
 
-        if (transform.position.y < -1f) {
-            SceneBuilder.Instance.SendMessage("SetPlayerY", transform.position.y);
+        if (hlimit < transform.position.y) {
+            transform.Translate(Vector3.up * (hlimit-transform.position.y));
         }
+
+        SceneBuilder.Instance.SendMessage("SetPlayerPos", transform.position);
     }
 
     void OnCollisionEnter(Collision col)

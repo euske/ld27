@@ -12,9 +12,9 @@ for i in xrange(10):
         s = 'GOAL'
         color = (255,255,0,255)
     else:
-        s = '%3d' % (100-i*10)
+        s = '%3d%%' % (100-i*10)
         color = (255,255,255,255)
     t = font.render(s, 1, color)
-    img.blit(t, (0,i*96))
-    img.fill(color, (60, i*96+6, 40, 1))
+    img.blit(t, (20,i*96))
+    img.fill(color, (80, i*96+12, 20, 1))
 pygame.image.save(img, 'wall.png')
