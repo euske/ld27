@@ -16,10 +16,11 @@ public class SceneBuilder : MonoBehaviour
     public const float range = 5.0f;
     public const float floorspeed = 30.0f;
     public const float floorlimit = 50.0f;
+    public const int tiling = 100;
     //public const float goalpos = -30.0f; // testing
     public const float goalpos = +45.0f;
     public const float objinterval = 1.0f;
-    public const float floortexratio = floorspeed/floorlimit*0.5f;
+    public const float floortexratio = floorspeed/floorlimit*tiling*0.5f;
     public const float bottomy = -20.0f;
 
     public Transform[] blockPrefabs;
@@ -67,6 +68,10 @@ public class SceneBuilder : MonoBehaviour
                     0, 1, 2, 3, 3, 3, 4, 4,
                     10, 
                     20, 21, },
+
+        // mode 5: no food
+        new int[] { -1, -1, -1, -1, -1, -1,
+                    0, 2, 3, 4, },
 
     };
     

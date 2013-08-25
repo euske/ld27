@@ -18,7 +18,7 @@ public class PowerupDisplay : MonoBehaviour {
     void Awake()
     {
         Instance = this;
-        style_big = new GUIStyle2(720, Color.yellow);
+        style_big = new GUIStyle2(600, Color.yellow);
         style_normal = new GUIStyle2(72, Color.white);
     }
 
@@ -30,7 +30,7 @@ public class PowerupDisplay : MonoBehaviour {
                 style_big.Render(r, left.ToString());
             } else if (current != null) {
                 Rect r = new Rect(Screen.width/2+100, 0, 200, 72);
-                style_normal.Render(r, "Take this! -->");
+                style_normal.Render(r, "Use me! -->");
             }
         }
     }
