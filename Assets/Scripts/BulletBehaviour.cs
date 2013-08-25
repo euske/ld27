@@ -7,12 +7,19 @@ public class BulletBehaviour : MonoBehaviour {
     public float speed = 10.0f;
 
     void Start () {
-	rigidbody.AddForce(transform.forward * speed, ForceMode.Impulse);
+        rigidbody.AddForce(Vector3.forward * speed, ForceMode.Impulse);
 	Destroy(gameObject, duration);
     }
-    
+
     void OnCollisionEnter(Collision col)
     {
-	Destroy(gameObject);
+        if (col.gameObject.tag == "block" ||
+            col.gameObject.tag == "enemy" ||
+            col.gameObject.tag == "food" ||
+            col.gameObject.tag == "powerup") {
+            GameManager.Instance.SendMessage("SomethingDestroyed");
+            Destroy(col.gameObject);
+        }
+        Destroy(gameObject);
     }
 }

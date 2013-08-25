@@ -5,13 +5,15 @@ public class PlayerBehaviour : MonoBehaviour
 {
     public const int TEN_SECONDS = 10;
 
-    public const float speed = 10.0f;
-    public const float jumpacc = 6.0f;
-    public const float extrajumpacc = 5.0f;
-    public const int maxhealth = 5;
-    public const float setback = 5.0f;
+    public const float hspeed = 10.0f;
+    public const float vspeed = 2.0f;
+    public const float jumpacc = 10.0f;
+    public const float extrajumpduration = 0.3f;
+    public static Vector2 setback = new Vector2(-10.0f, +1.0f);
     public const float gun_interval = 0.1f;
     public const float gravity = -20.0f;
+    public static Color normal_color = Color.white;
+    public static Color transparent_color = new Color(0f, 1f, 0.5f, 0.2f);
     
     public Transform bulletPrefab;
     public AudioClip jumpsound;
@@ -23,27 +25,26 @@ public class PlayerBehaviour : MonoBehaviour
     public AudioClip firesound;
 
     private bool landed;
-    private int health;
     private int powerup_timer;
     private float powerup_tick;
     private PowerupType powerup_active;
-    private PowerupType powerup_owned = PowerupType.ExtraJump;
+    private PowerupType powerup_owned = PowerupType.Transparency;
     private float gun_tick;
+    private float jump_end;
 
     void Start()
     {
         landed = false;
-        health = maxhealth;
-        GameManager.Instance.SendMessage("SetHealth", health);
         PowerupDisplay.Instance.SendMessage("UpdateTimer", powerup_timer);
         PowerupDisplay.Instance.SendMessage("UpdateType", powerup_owned);
+        renderer.material.color = normal_color;
     }
 
     void Update()
     {
-	float r = speed * Time.deltaTime;
-        float vx = Input.GetAxis("Horizontal") * r;
-        float vz = Input.GetAxis("Vertical") * r;
+        float vx = Input.GetAxis("Horizontal") * hspeed * Time.deltaTime;
+        //float vz = Input.GetAxis("Vertical") * r;
+        float vz = vspeed * Time.deltaTime;
 	transform.Translate(Vector3.right * vx + 
                             Vector3.forward * vz);
 
@@ -53,7 +54,7 @@ public class PlayerBehaviour : MonoBehaviour
             if (jumpsound) {
                 audio.PlayOneShot(jumpsound);
             }
-            rigidbody.AddForce(transform.up * jumpacc, ForceMode.Impulse);
+            rigidbody.AddForce(Vector3.up * jumpacc, ForceMode.Impulse);
         }
 
 	if (powerup_owned != PowerupType.None &&
@@ -68,12 +69,14 @@ public class PlayerBehaviour : MonoBehaviour
             PowerupDisplay.Instance.SendMessage("UpdateTimer", powerup_timer);
             switch (powerup_active) {
             case PowerupType.ExtraJump:
-                rigidbody.AddForce(transform.up * extrajumpacc, ForceMode.Impulse);
+                rigidbody.AddForce(Vector3.up * jumpacc, ForceMode.Impulse);
+                jump_end = Time.time + extrajumpduration;
                 break;
             case PowerupType.Gun:
                 gun_tick = Time.time;
                 break;
             case PowerupType.Transparency:
+                renderer.material.color = transparent_color;
                 break;
             }
         }
@@ -85,13 +88,20 @@ public class PlayerBehaviour : MonoBehaviour
                 if (firesound) {
                     audio.PlayOneShot(firesound);
                 }
-                Vector3 pos = transform.position + transform.forward * transform.localScale.z;
-                Instantiate(bulletPrefab, pos, transform.rotation);
+                Vector3 pos = (transform.up * transform.localScale.y * -0.5f +
+                               transform.forward * transform.localScale.z);
+                Instantiate(bulletPrefab, transform.position + pos, transform.rotation);
             }
         }
 
-        if (powerup_active != PowerupType.ExtraJump) {
-            rigidbody.AddForce(transform.up * gravity);
+        if (powerup_active == PowerupType.ExtraJump) {
+            float t = Time.time;
+            if (0 < jump_end && jump_end < t) {
+                rigidbody.AddForce(Vector3.up * (-jumpacc), ForceMode.Impulse);
+                jump_end = -1;
+            }
+        } else {
+            rigidbody.AddForce(Vector3.up * gravity);
         }
 
         if (0 < powerup_timer) {
@@ -103,6 +113,11 @@ public class PlayerBehaviour : MonoBehaviour
                 PowerupDisplay.Instance.SendMessage("UpdateTimer", powerup_timer);
             }
             if (powerup_timer == 0) {
+                switch (powerup_active) {
+                case PowerupType.Transparency:
+                    renderer.material.color = normal_color;
+                    break;
+                }
                 powerup_active = PowerupType.None;
                 PowerupDisplay.Instance.SendMessage("UpdateType", PowerupType.None);
             }
@@ -121,15 +136,14 @@ public class PlayerBehaviour : MonoBehaviour
             }
 	    landed = true;
 
-        } else if (col.gameObject.tag == "block") {
+        } else if (col.gameObject.tag == "block" ||
+                   col.gameObject.tag == "enemy") {
             if (powerup_active != PowerupType.Transparency) {
                 if (hitsound) {
                     audio.PlayOneShot(hitsound);
                 }
-                health--;
-                GameManager.Instance.SendMessage("SetHealth", health);
-                rigidbody.AddForce(transform.up * setback +
-                                   transform.forward * -setback,
+                rigidbody.AddForce(Vector3.up * setback.y +
+                                   Vector3.forward * setback.x,
                                    ForceMode.Impulse);
             }
             

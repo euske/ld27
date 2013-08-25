@@ -5,9 +5,9 @@ public class GameManager : MonoBehaviour {
 
     public static GameManager Instance;
 
-    public int score;
-    public int health;
-    
+    public AudioClip destroysound;
+
+    private int score;
     private GUIStyle style;
 
     void Awake()
@@ -21,7 +21,6 @@ public class GameManager : MonoBehaviour {
     void Start() 
     {
         score = 0;
-        health = 0;
     }
 	
     void Update () {
@@ -38,14 +37,13 @@ public class GameManager : MonoBehaviour {
         score += (food == FoodType.Golden)? 3 : 1;
     }
 
-    void SetHealth(int v)
+    void SomethingDestroyed()
     {
-        health = v;
+        audio.PlayOneShot(destroysound);
     }
 
     void OnGUI()
     {
         GUI.Label(new Rect(32, 32, 100, 100), ("Score: "+score), style);
-        GUI.Label(new Rect(32, 64, 100, 100), ("Health: "+health), style);
     }
 }

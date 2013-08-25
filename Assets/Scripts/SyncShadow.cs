@@ -3,7 +3,7 @@ using System.Collections;
 
 public class SyncShadow : MonoBehaviour 
 {
-    public Transform light;
+    public new Transform light;
     public Transform target;
 
     void Awake()
