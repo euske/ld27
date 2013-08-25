@@ -16,8 +16,8 @@ public class SceneBuilder : MonoBehaviour
     public const float range = 5.0f;
     public const float floorspeed = 30.0f;
     public const float floorlimit = 50.0f;
-    //public const float goalpos = -30.0f; // testing
-    public const float goalpos = +45.0f;
+    public const float goalpos = -30.0f; // testing
+    //public const float goalpos = +45.0f;
     public const float objinterval = 1.0f;
     public const float floortexratio = floorspeed/floorlimit*0.5f;
     public const float bottomy = -20.0f;
@@ -96,6 +96,7 @@ public class SceneBuilder : MonoBehaviour
         score = 0;
         objects = new List<Transform>();
         changeMode();
+        GameManager.Instance.score = 0;
     }
 
     void SetPlayerPos(Vector3 pos)
@@ -124,6 +125,7 @@ public class SceneBuilder : MonoBehaviour
     void UpdateScore(FoodType food)
     {
         score += (food == FoodType.Golden)? 3 : 1;
+        GameManager.Instance.score = score;
     }
 
     void SomethingDestroyed()
