@@ -7,7 +7,7 @@ public class PlayerBehaviour : MonoBehaviour
 
     public const float range = 5.0f;
     public const float hspeed = 10.0f;
-    public const float vspeed = 2.0f;
+    public const float vspeed = 3.0f; // difficulty
     public const float hlimit = 4.5f;
     public const float jumpacc = 10.0f;
     public const float extrajumpheight = 4.0f;
@@ -128,7 +128,10 @@ public class PlayerBehaviour : MonoBehaviour
             }
         }
 
+        float x = transform.position.x;
+
         if (powerup_active == PowerupType.ExtraJump) {
+            x = Mathf.Clamp(transform.position.x, -range, +range);
             if (transform.position.y < extrajumpheight) {
                 transform.Translate(Vector3.up * extrajumpspeed * Time.deltaTime);
             }
@@ -149,7 +152,7 @@ public class PlayerBehaviour : MonoBehaviour
         }
 
         transform.position = new Vector3(
-            Mathf.Clamp(transform.position.x, -range, +range),
+            x,
             Mathf.Clamp(transform.position.y, -100f, hlimit),
             Mathf.Clamp(transform.position.z, -100f, +100f));
 

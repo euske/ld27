@@ -17,8 +17,8 @@ public class SceneBuilder : MonoBehaviour
     public const float floorspeed = 30.0f;
     public const float floorlimit = 50.0f;
     public const int tiling = 100;
-    //public const float goalpos = -30.0f; // testing
-    public const float goalpos = +45.0f;
+    public const float timeout = 2f;
+    public const float goalpos = +50.0f;
     public const float objinterval = 1.0f;
     public const float floortexratio = floorspeed/floorlimit*tiling*0.5f;
     public const float bottomy = -20.0f;
@@ -26,6 +26,7 @@ public class SceneBuilder : MonoBehaviour
     public Transform[] blockPrefabs;
     public Transform[] foodPrefabs;
     public Transform[] powerupPrefabs;
+    public GameObject floorObject;
     public Material floorMaterial;
     public AudioClip destroysound;
     public AudioClip pancakesound;
@@ -78,6 +79,7 @@ public class SceneBuilder : MonoBehaviour
     private int score;
     private int mode;
     private float mode_end;
+    private float game_end;
     private float t0;
     private List<Transform> objects;
     private bool visible;
@@ -87,6 +89,10 @@ public class SceneBuilder : MonoBehaviour
         Instance = this;
         style_big = new GUIStyle2(360, Color.white);
         style_normal = new GUIStyle2(49, Color.white);
+        if (floorObject && floorMaterial) {
+            Renderer renderer = floorObject.GetComponent<Renderer>();
+            renderer.material.CopyPropertiesFromMaterial(floorMaterial);
+        }
     }
 
     void Start () 
@@ -103,22 +109,13 @@ public class SceneBuilder : MonoBehaviour
         if (status == PlayerStatus.None) {
             if (goalpos < pos.z) {
                 status = PlayerStatus.Goaled;
+                game_end = Time.time + timeout;
             } else if (pos.y < -1f) {
                 status = PlayerStatus.Died;
+                game_end = Time.time + timeout;
                 audio.PlayOneShot(pancakesound);
             }
         } 
-
-        if (pos.y < bottomy) {
-            switch (status) {
-            case PlayerStatus.Goaled:
-                Application.LoadLevel("scene2");
-                break;
-            case PlayerStatus.Died:
-                Application.LoadLevel("scene0");
-                break;
-            }
-        }
     }
 
     void UpdateScore(FoodType food)
@@ -178,6 +175,17 @@ public class SceneBuilder : MonoBehaviour
 
     void Update () {
         float t = Time.time;
+        if (status != PlayerStatus.None && game_end < t) {
+            switch(status) {
+            case PlayerStatus.Died:
+                Application.LoadLevel("scene0");
+                break;
+            case PlayerStatus.Goaled:
+                Application.LoadLevel("scene2");
+                break;
+            }
+        }
+
         if (mode_end < t) {
             changeMode();
         }
@@ -210,8 +218,10 @@ public class SceneBuilder : MonoBehaviour
             Destroy(obj.gameObject);
         }
 
-        if (floorMaterial) {
-            floorMaterial.mainTextureOffset = new Vector2(0, t*floortexratio);
+        if (floorObject) {
+            Renderer renderer = floorObject.GetComponent<Renderer>();
+            renderer.material.CopyPropertiesFromMaterial(floorMaterial);
+            renderer.material.mainTextureOffset = new Vector2(0, t*floortexratio);
         }
 
     }

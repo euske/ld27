@@ -23,7 +23,7 @@ public class EndingScript : MonoBehaviour {
     void OnGUI()
     {
         Rect r = new Rect(Screen.width/2-100, Screen.height/2, 200, 200);
-        int score = GameManager.Instance.score;
+        int score = (GameManager.Instance != null)? GameManager.Instance.score : -1;
         style.Render(r, "Score: "+score);
     }
 }

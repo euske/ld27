@@ -433,6 +433,7 @@ MonoBehaviour:
   - {fileID: 400002, guid: 1599b5d9eeca18746b43fc2c942a681c, type: 2}
   - {fileID: 400002, guid: 0cfc936a42a8b8146b0b649971dbbad2, type: 2}
   - {fileID: 400002, guid: 3c7f4b7a27ffe084c97a3766ff860ab5, type: 2}
+  floorObject: {fileID: 1945809947}
   floorMaterial: {fileID: 2100000, guid: a664706d094e09d4399e992402f8fdf5, type: 2}
   destroysound: {fileID: 8300000, guid: db21b2c010f7bf6408f92efb343d663b, type: 3}
   pancakesound: {fileID: 8300000, guid: de203acb398fcd6429fda8117bb84393, type: 3}
@@ -804,7 +805,7 @@ Renderer:
   m_LightmapIndex: 255
   m_LightmapTilingOffset: {x: 1, y: 1, z: 0, w: 0}
   m_Materials:
-  - {fileID: 2100000, guid: a664706d094e09d4399e992402f8fdf5, type: 2}
+  - {fileID: 10302, guid: 0000000000000000f000000000000000, type: 0}
   m_SubsetIndices: 
   m_StaticBatchRoot: {fileID: 0}
   m_UseLightProbes: 0
@@ -837,8 +838,8 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1945809947}
   m_LocalRotation: {x: 0, y: 1, z: 0, w: -4.37113883e-08}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 10}
+  m_LocalPosition: {x: 0, y: 0, z: 50}
+  m_LocalScale: {x: 1, y: 1, z: 20}
   m_Children: []
   m_Father: {fileID: 1281394769}
 --- !u!1 &1961842842
