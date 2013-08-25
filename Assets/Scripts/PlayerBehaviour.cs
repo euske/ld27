@@ -14,11 +14,13 @@ public class PlayerBehaviour : MonoBehaviour
     public const float extrajumpspeed = 10.0f;
     public static Vector2 knockback = new Vector2(-20.0f, +1.0f);
     public const float gun_interval = 0.1f;
+    public const float walk_interval = 0.4f;
     public const float gravity = -20.0f;
     public static Color normal_color = Color.white;
     public static Color transparent_color = new Color(0f, 1f, 0.5f, 0.5f);
     
     public Transform bulletPrefab;
+    public AudioClip walksound;
     public AudioClip jumpsound;
     public AudioClip landsound;
     public AudioClip eatsound;
@@ -28,6 +30,7 @@ public class PlayerBehaviour : MonoBehaviour
     public AudioClip firesound;
 
     private bool landed;
+    private float walk_tick;
     private int powerup_timer;
     private float powerup_tick;
     private PowerupType powerup_active;
@@ -64,6 +67,8 @@ public class PlayerBehaviour : MonoBehaviour
 
     void Update()
     {
+        float t = Time.time;
+
         float vx = Input.GetAxis("Horizontal") * hspeed * Time.deltaTime;
         //float vz = Input.GetAxis("Vertical") * r;
         float vz = vspeed * Time.deltaTime;
@@ -75,11 +80,21 @@ public class PlayerBehaviour : MonoBehaviour
 //            Input.GetButtonDown("Jump")) {
 //            rigidbody.AddForce(Vector3.up * jumpacc, ForceMode.Impulse);
 //        }
+        if (landed && vx != 0) {
+            if (walk_tick+walk_interval < t) {
+                walk_tick = t;
+                if (walksound) {
+                    audio.PlayOneShot(walksound);
+                }
+            }
+        } else {
+            walk_tick = 0;
+        }
 
 	if (powerup_owned != PowerupType.None &&
             Input.GetButtonDown("Jump")) {
             powerup_timer = TEN_SECONDS;
-            powerup_tick = Time.time;
+            powerup_tick = t;
             powerup_active = powerup_owned;
             powerup_owned = PowerupType.None;
             PowerupDisplay.Instance.SendMessage("UpdateTimer", powerup_timer);
@@ -90,7 +105,7 @@ public class PlayerBehaviour : MonoBehaviour
                 }
                 break;
             case PowerupType.Gun:
-                gun_tick = Time.time;
+                gun_tick = t;
                 break;
             case PowerupType.Transparency:
                 if (powerupsound) {
@@ -102,7 +117,6 @@ public class PlayerBehaviour : MonoBehaviour
         }
 
         if (powerup_active == PowerupType.Gun) {
-            float t = Time.time;
             if (gun_tick+gun_interval < t) {
                 gun_tick = t;
                 if (firesound) {
@@ -121,7 +135,6 @@ public class PlayerBehaviour : MonoBehaviour
         }
 
         if (0 < powerup_timer) {
-            float t = Time.time;
             if (powerup_tick+1.0f < t) {
                 audio.PlayOneShot(ticksound);
                 powerup_tick = t;
