@@ -8,12 +8,13 @@ public class PlayerBehaviour : MonoBehaviour
     public const float hspeed = 10.0f;
     public const float vspeed = 2.0f;
     public const float jumpacc = 10.0f;
-    public const float extrajumpduration = 0.3f;
-    public static Vector2 setback = new Vector2(-20.0f, +1.0f);
+    public const float extrajumpheight = 4.0f;
+    public const float extrajumpspeed = 10.0f;
+    public static Vector2 knockback = new Vector2(-20.0f, +1.0f);
     public const float gun_interval = 0.1f;
     public const float gravity = -20.0f;
     public static Color normal_color = Color.white;
-    public static Color transparent_color = new Color(0f, 1f, 0.5f, 0.2f);
+    public static Color transparent_color = new Color(0f, 1f, 0.5f, 0.5f);
     
     public Transform bulletPrefab;
     public AudioClip jumpsound;
@@ -30,7 +31,6 @@ public class PlayerBehaviour : MonoBehaviour
     private PowerupType powerup_active;
     private PowerupType powerup_owned = PowerupType.Transparency;
     private float gun_tick;
-    private float jump_end;
 
     void Start()
     {
@@ -50,6 +50,13 @@ public class PlayerBehaviour : MonoBehaviour
             renderer.material.color = normal_color;
             rigidbody.isKinematic = false;
             collider.enabled = true;
+        }
+    }
+
+    void FixedUpdate()
+    {
+        if (powerup_active != PowerupType.ExtraJump) {
+            rigidbody.AddForce(Vector3.up * gravity);
         }
     }
 
@@ -82,8 +89,6 @@ public class PlayerBehaviour : MonoBehaviour
             PowerupDisplay.Instance.SendMessage("UpdateTimer", powerup_timer);
             switch (powerup_active) {
             case PowerupType.ExtraJump:
-                rigidbody.AddForce(Vector3.up * jumpacc, ForceMode.Impulse);
-                jump_end = Time.time + extrajumpduration;
                 break;
             case PowerupType.Gun:
                 gun_tick = Time.time;
@@ -108,13 +113,9 @@ public class PlayerBehaviour : MonoBehaviour
         }
 
         if (powerup_active == PowerupType.ExtraJump) {
-            float t = Time.time;
-            if (0 < jump_end && jump_end < t) {
-                rigidbody.AddForce(Vector3.up * (-jumpacc), ForceMode.Impulse);
-                jump_end = -1;
+            if (transform.position.y < extrajumpheight) {
+                transform.Translate(Vector3.up * extrajumpspeed * Time.deltaTime);
             }
-        } else {
-            rigidbody.AddForce(Vector3.up * gravity);
         }
 
         if (0 < powerup_timer) {
@@ -133,7 +134,7 @@ public class PlayerBehaviour : MonoBehaviour
         }
 
         if (transform.position.y < -1f) {
-            GameManager.Instance.SendMessage("GameOver");
+            SceneBuilder.Instance.SendMessage("SetPlayerY", transform.position.y);
         }
     }
 
@@ -151,8 +152,8 @@ public class PlayerBehaviour : MonoBehaviour
                 if (hitsound) {
                     audio.PlayOneShot(hitsound);
                 }
-                rigidbody.AddForce(Vector3.up * setback.y +
-                                   Vector3.forward * setback.x,
+                rigidbody.AddForce(Vector3.up * knockback.y +
+                                   Vector3.forward * knockback.x,
                                    ForceMode.Impulse);
             }
             
@@ -162,7 +163,7 @@ public class PlayerBehaviour : MonoBehaviour
                     audio.PlayOneShot(eatsound);
                 }
                 FoodBehaviour food = col.gameObject.GetComponent<FoodBehaviour>();
-                GameManager.Instance.SendMessage("UpdateScore", food.food_type);
+                SceneBuilder.Instance.SendMessage("UpdateScore", food.food_type);
                 Destroy(col.gameObject);
             }
 

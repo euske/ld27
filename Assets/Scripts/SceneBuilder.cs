@@ -4,16 +4,22 @@ using System.Collections.Generic;
 
 public class SceneBuilder : MonoBehaviour
 {
+    public static SceneBuilder Instance;
+
     public const float range = 5.0f;
     public const float floorspeed = 30.0f;
     public const float floorlimit = 50.0f;
-    public const float objinterval = 3.0f;
-    public const float floortexratio = floorspeed;
+    public const float objinterval = 1.0f;
+    public const float floortexratio = floorspeed/floorlimit*0.5f;
+    public const float bottomy = -20.0f;
 
     public Transform[] blockPrefabs;
     public Transform[] foodPrefabs;
     public Transform[] powerupPrefabs;
     public Material floorMaterial;
+    public AudioClip destroysound;
+    private GUIStyle style_big;
+    private GUIStyle style_normal;
 
     public int[][] distribution = {
         // -1: no object
@@ -21,51 +27,95 @@ public class SceneBuilder : MonoBehaviour
         // 10, 11: food: normal, golden 
         // 20, 21, 22: powerup: extra jump, gun, transparency
 
-        // mode 0: nothing!
-        new int[] { -1, },
+        // mode 0: normal
+        new int[] { -1, -1, -1, -1, -1, -1, -1,
+                    0, 1, 2, 2, 3, 4,
+                    10, 10,
+                    20, },
 
-        // mode 1: normal
-        new int[] { -1, -1, -1, 
-                    0, 1, 2, 2, 3, 
-                    10, 10, 
-                    20, 21, 22 },
-
-        // mode 2: upper block
+        // mode 1: upper block
         new int[] { -1, -1, -1,
-                    0, 2, 4, 4,
+                    0, 2, 4, 4, 4, 
                     10, 
-                    20, 21, 22, },
+                    20, },
 
-        // mode 3: food!
-        new int[] { -1, -1, 
+        // mode 2: food!
+        new int[] { -1, -1, -1, -1, 
                     0, 1, 2, 
-                    10, 10, 11, 
-                    },
+                    10, 10, 10, 10, 10, 11, 
+                    20, },
 
-        // mode 4: too much enemies
-        new int[] { -1, 
-                    0, 1, 2, 3, 3, 4, 
+        // mode 3: too much enemies
+        new int[] { -1, -1, 
+                    0, 1, 2, 3, 3, 3, 4, 4,
                     10, 
-                    20, 21, 22, },
+                    20, },
 
     };
     
+    private int score;
     private int mode;
     private float mode_end;
     private float t0;
     private List<Transform> objects;
+    private bool visible;
+    private float playery;
     
-    void Start () {
+    void Awake()
+    {
+        Instance = this;
+        style_big = new GUIStyle();
+        style_big.fontSize = 360;
+        style_big.alignment = TextAnchor.MiddleCenter;
+        style_big.normal.textColor = Color.white;
+        style_normal = new GUIStyle();
+        style_normal.fontSize = 48;
+        style_normal.alignment = TextAnchor.MiddleCenter;
+        style_normal.normal.textColor = Color.white;
+    }
+
+    void Start () 
+    {
         t0 = Time.time;
+        score = 0;
         objects = new List<Transform>();
         changeMode();
+    }
+
+    void SetPlayerY(float y)
+    {
+        playery = y;
+        if (playery < bottomy) {
+            Application.LoadLevel("scene0");
+        }
+    }
+
+    void UpdateScore(FoodType food)
+    {
+        score += (food == FoodType.Golden)? 3 : 1;
+    }
+
+    void SomethingDestroyed()
+    {
+        audio.PlayOneShot(destroysound);
+    }
+
+    void OnGUI()
+    {
+        GUI.Label(new Rect(32, 0, 200, 100), ("Score: "+score), style_normal);
+        if (visible) {
+            if (playery < -1f) {
+                Rect r = new Rect(Screen.width/2-100, Screen.height/2-100, 200, 200);
+                GUI.Label(r, ":(", style_big);
+            }
+        }
     }
 
     private void changeMode()
     {
         mode = Random.Range(0, distribution.Length);
         mode_end = Time.time + Random.Range(1f, 3f);
-        print("mode="+mode);
+        //print("mode="+mode);
     }
 
     private Transform getPrefab(int objtype)
@@ -87,6 +137,8 @@ public class SceneBuilder : MonoBehaviour
         if (mode_end < t) {
             changeMode();
         }
+
+        visible = (((t/0.2f) % 2) < 1);
         
         if (t0 + objinterval/floorspeed <= t) {
             t0 = t;
@@ -94,7 +146,7 @@ public class SceneBuilder : MonoBehaviour
             int objtype = dist1[Random.Range(0, dist1.Length)];
             Transform prefab = getPrefab(objtype);
             if (prefab != null) {
-                Vector3 pos = new Vector3(Random.Range(-range, +range), 0, +floorlimit);
+                Vector3 pos = new Vector3(Random.Range(-range, +range), 0, +floorlimit*2);
                 Transform obj = Instantiate(prefab, pos, transform.rotation) as Transform;
                 obj.parent = transform;
                 objects.Add(obj);

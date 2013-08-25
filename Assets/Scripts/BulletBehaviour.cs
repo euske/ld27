@@ -17,7 +17,7 @@ public class BulletBehaviour : MonoBehaviour {
             col.gameObject.tag == "enemy" ||
             col.gameObject.tag == "food" ||
             col.gameObject.tag == "powerup") {
-            GameManager.Instance.SendMessage("SomethingDestroyed");
+            SceneBuilder.Instance.SendMessage("SomethingDestroyed");
             Destroy(col.gameObject);
         }
         Destroy(gameObject);
