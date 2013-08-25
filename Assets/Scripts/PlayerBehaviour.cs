@@ -9,7 +9,7 @@ public class PlayerBehaviour : MonoBehaviour
     public const float vspeed = 2.0f;
     public const float jumpacc = 10.0f;
     public const float extrajumpduration = 0.3f;
-    public static Vector2 setback = new Vector2(-10.0f, +1.0f);
+    public static Vector2 setback = new Vector2(-20.0f, +1.0f);
     public const float gun_interval = 0.1f;
     public const float gravity = -20.0f;
     public static Color normal_color = Color.white;
@@ -37,7 +37,20 @@ public class PlayerBehaviour : MonoBehaviour
         landed = false;
         PowerupDisplay.Instance.SendMessage("UpdateTimer", powerup_timer);
         PowerupDisplay.Instance.SendMessage("UpdateType", powerup_owned);
-        renderer.material.color = normal_color;
+        setTransparency(false);
+    }
+
+    private void setTransparency(bool transparent)
+    {
+        if (transparent) {
+            renderer.material.color = transparent_color;
+            rigidbody.isKinematic = true;
+            collider.enabled = false;
+        } else {
+            renderer.material.color = normal_color;
+            rigidbody.isKinematic = false;
+            collider.enabled = true;
+        }
     }
 
     void Update()
@@ -76,7 +89,7 @@ public class PlayerBehaviour : MonoBehaviour
                 gun_tick = Time.time;
                 break;
             case PowerupType.Transparency:
-                renderer.material.color = transparent_color;
+                setTransparency(true);
                 break;
             }
         }
@@ -113,11 +126,7 @@ public class PlayerBehaviour : MonoBehaviour
                 PowerupDisplay.Instance.SendMessage("UpdateTimer", powerup_timer);
             }
             if (powerup_timer == 0) {
-                switch (powerup_active) {
-                case PowerupType.Transparency:
-                    renderer.material.color = normal_color;
-                    break;
-                }
+                setTransparency(false);
                 powerup_active = PowerupType.None;
                 PowerupDisplay.Instance.SendMessage("UpdateType", PowerupType.None);
             }

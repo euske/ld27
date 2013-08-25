@@ -116,7 +116,6 @@ public class SceneBuilder : MonoBehaviour
 
         if (floorMaterial) {
             floorMaterial.mainTextureOffset = new Vector2(0, t*floortexratio);
-            print("offset="+t*floortexratio);
         }
 
     }
