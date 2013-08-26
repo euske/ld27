@@ -436,6 +436,7 @@ MonoBehaviour:
   floorObject: {fileID: 1945809947}
   floorMaterial: {fileID: 2100000, guid: a664706d094e09d4399e992402f8fdf5, type: 2}
   destroysound: {fileID: 8300000, guid: db21b2c010f7bf6408f92efb343d663b, type: 3}
+  clearsound: {fileID: 8300000, guid: 1bc232d4871668c4faf0627d40060c99, type: 3}
   pancakesound: {fileID: 8300000, guid: de203acb398fcd6429fda8117bb84393, type: 3}
 --- !u!1 &1614521012
 GameObject:
@@ -677,7 +678,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1833646963}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 4, z: -40}
+  m_LocalPosition: {x: 0, y: 4, z: -45}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 683586755}

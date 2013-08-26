@@ -14,13 +14,13 @@ public class SceneBuilder : MonoBehaviour
     public static SceneBuilder Instance;
 
     public const float range = 5.0f;
-    public const float floorspeed = 30.0f;
+    public const float speed_min = 20.0f;
+    public const float speed_max = 60.0f;
     public const float floorlimit = 50.0f;
-    public const int tiling = 100;
+    public const int tiling = 50;
     public const float timeout = 2f;
     public const float goalpos = +50.0f;
     public const float objinterval = 1.5f;
-    public const float floortexratio = floorspeed/floorlimit*tiling*0.5f;
     public const float mode_min = 0.5f;
     public const float mode_max = 4.0f;
 
@@ -30,10 +30,10 @@ public class SceneBuilder : MonoBehaviour
     public GameObject floorObject;
     public Material floorMaterial;
     public AudioClip destroysound;
+    public AudioClip clearsound;
     public AudioClip pancakesound;
     private GUIStyle2 style_big;
     private GUIStyle2 style_normal;
-    private PlayerStatus status = PlayerStatus.None;
 
     public int[][] distribution = {
         // -1: no object
@@ -84,7 +84,9 @@ public class SceneBuilder : MonoBehaviour
     private float game_end;
     private float t0;
     private List<Transform> objects;
-    private bool visible;
+    private bool text_visible;
+    private PlayerStatus status = PlayerStatus.None;
+    private float floorspeed;
 
     void Awake()
     {
@@ -111,11 +113,16 @@ public class SceneBuilder : MonoBehaviour
         if (status == PlayerStatus.None) {
             if (goalpos < pos.z) {
                 status = PlayerStatus.Goaled;
-                game_end = Time.time + timeout;
+                game_end = Time.time + 3f;
+                if (clearsound) {
+                    audio.PlayOneShot(clearsound);
+                }
             } else if (pos.y < -1f) {
                 status = PlayerStatus.Died;
                 game_end = Time.time + timeout;
-                audio.PlayOneShot(pancakesound);
+                if (pancakesound) {
+                    audio.PlayOneShot(pancakesound);
+                }
             }
         } 
     }
@@ -128,7 +135,9 @@ public class SceneBuilder : MonoBehaviour
 
     void SomethingDestroyed()
     {
-        audio.PlayOneShot(destroysound);
+        if (destroysound) {
+            audio.PlayOneShot(destroysound);
+        }
     }
 
     void OnGUI()
@@ -142,7 +151,7 @@ public class SceneBuilder : MonoBehaviour
             break;
         }
 
-        if (visible) {
+        if (text_visible) {
             Rect r = new Rect(Screen.width/2-100, Screen.height/2-100, 200, 200);
             switch (status) {
             case PlayerStatus.Goaled:
@@ -192,7 +201,9 @@ public class SceneBuilder : MonoBehaviour
             changeMode();
         }
 
-        visible = (((t/0.2f) % 2) < 1);
+        floorspeed = Mathf.Min(speed_min + t*0.3f, speed_max);
+
+        text_visible = (((t/0.2f) % 2) < 1);
         
         if (t0 + objinterval/floorspeed <= t) {
             t0 = t;
@@ -221,9 +232,10 @@ public class SceneBuilder : MonoBehaviour
         }
 
         if (floorObject) {
+            float ratio = floorspeed/floorlimit*tiling*0.5f;
             Renderer renderer = floorObject.GetComponent<Renderer>();
             renderer.material.CopyPropertiesFromMaterial(floorMaterial);
-            renderer.material.mainTextureOffset = new Vector2(0, t*floortexratio);
+            renderer.material.mainTextureOffset = new Vector2(0, t*ratio);
         }
 
     }

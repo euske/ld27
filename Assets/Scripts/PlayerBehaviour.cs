@@ -85,7 +85,7 @@ public class PlayerBehaviour : MonoBehaviour
             rigidbody.AddForce(Vector3.up * jumpacc, ForceMode.Impulse);
         }
         
-        if (landed && vx != 0) {
+        if (landed && Input.GetButton("Horizontal")) {
             if (walk_tick+walk_interval < t) {
                 walk_tick = t;
                 if (walksound) {
@@ -144,7 +144,9 @@ public class PlayerBehaviour : MonoBehaviour
 
         if (0 < powerup_timer) {
             if (powerup_tick+1.0f < t) {
-                audio.PlayOneShot(ticksound);
+                if (ticksound) {
+                    audio.PlayOneShot(ticksound);
+                }
                 powerup_tick = t;
                 powerup_timer--;
                 PowerupDisplay.Instance.SendMessage("UpdateTimer", powerup_timer);
