@@ -3,6 +3,7 @@
 RM=rm -f
 CP=cp -f
 MV=mv -f
+TAR=tar
 RSYNC=rsync -av
 
 # Project settings
@@ -14,3 +15,10 @@ all:
 update: $(TARGET)
 	-$(MV) $(TARGET)/$(TARGET).html $(TARGET)/index.html
 	$(RSYNC) $(TARGET)/ $(URLBASE)/
+
+ld27_euske_linux.tar.gz: ld27_euske_linux
+	$(TAR) zcf ld27_euske_linux.tar.gz ld27_euske_linux
+upload_linux: ld27_euske_linux.tar.gz
+	$(RSYNC) ld27_euske_linux.tar.gz $(URLBASE)/
+clean:
+	-$(RM) ld27_euske_linux.tar.gz

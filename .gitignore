@@ -1,6 +1,6 @@
 *.meta
 ld27
-linux
+ld27_*
 Temp
 Library
 ProjectSettings
