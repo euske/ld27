@@ -201,7 +201,7 @@ public class SceneBuilder : MonoBehaviour
             changeMode();
         }
 
-        floorspeed = Mathf.Min(speed_min + t*0.3f, speed_max);
+        floorspeed = Mathf.Min(speed_min + Time.timeSinceLevelLoad*0.3f, speed_max);
 
         text_visible = (((t/0.2f) % 2) < 1);
         

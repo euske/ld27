@@ -18,7 +18,7 @@ update: $(TARGET)
 
 ld27_euske_linux.tar.gz: ld27_euske_linux
 	$(TAR) zcf ld27_euske_linux.tar.gz ld27_euske_linux
-upload_linux: ld27_euske_linux.tar.gz
+update_linux: ld27_euske_linux.tar.gz
 	$(RSYNC) ld27_euske_linux.tar.gz $(URLBASE)/
 clean:
 	-$(RM) ld27_euske_linux.tar.gz
